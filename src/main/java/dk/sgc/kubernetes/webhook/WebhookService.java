@@ -13,7 +13,8 @@ public class WebhookService {
 
     @POST
     @Path("/mutate")
-    public AdmissionReview  postMutate(AdmissionReview review) {
+    public AdmissionReview  postMutate() {
+        AdmissionReview  review = new AdmissionReview();
         System.out.println("Nu er vi her postMutate ");
         Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().setProperty(JsonbConfig.FORMATTING, true));
         System.out.println("received admission review: {}" + jsonb.toJson(review));
