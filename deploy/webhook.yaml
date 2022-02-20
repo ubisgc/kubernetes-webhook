@@ -1,24 +1,30 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: example-webhook
+  name: mutating-webhook
+  labels:
+    app: mutating-webhook
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"
 webhooks:
-  - name: example-webhook.default.svc.cluster.local
-    admissionReviewVersions:
-      - "v1beta1"
-    sideEffects: "None"
-    timeoutSeconds: 30
-    objectSelector:
-      matchLabels:
-        example-webhook-enabled: "true"
+  - name: mutationservices.admission.online.openshift.io
+    sideEffects: None
+    admissionReviewVersions: [ "v1" ]
     clientConfig:
       service:
-        name: example-webhook
-        namespace: default
-        path: "/mutate"
-      caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURiRENDQWxTZ0F3SUJBZ0lVVnBrNFlwUEhsbnRKaDkrQzZCWXVaZmtxTWg4d0RRWUpLb1pJaHZjTkFRRUwKQlFBd1RqRUxNQWtHQTFVRUJoTUNSRXN4RURBT0JnTlZCQWdUQjBWNFlXMXdiR1V4RGpBTUJnTlZCQWNUQlVoRgpTa3hUTVJBd0RnWURWUVFLRXdkRmVHRnRjR3hsTVFzd0NRWURWUVFMRXdKRFFUQWVGdzB5TWpBeU1UVXlNVEk0Ck1EQmFGdzB5TnpBeU1UUXlNVEk0TURCYU1FNHhDekFKQmdOVkJBWVRBa1JMTVJBd0RnWURWUVFJRXdkRmVHRnQKY0d4bE1RNHdEQVlEVlFRSEV3VklSVXBNVXpFUU1BNEdBMVVFQ2hNSFJYaGhiWEJzWlRFTE1Ba0dBMVVFQ3hNQwpRMEV3Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRElhak9jNFNpSk00a3luckt2CmZuZTZ3VVBRakRIb2lGVUpWbk1wcXB2MGUzKzZMMFg2WVhiVEMrSnlnb0VBelBjdTBWQjhkWC9ZZ1crR2xtRzAKVXVzdUVUUVFZQ1dXWXVvNFk3Qkd2bFB1bk1WRmtEL21Ma0xBWHZHR3crRUxCcDFPTG9LaFVBR3NRcHNabnk5Twp1d295MzZib3dnUnppVEQyRE96Z05XY1hKRTYzVTYwbG1vK21BUG5weWxkcUt1Q2tqckdReWhWK3BjUWFkbE5NCjJpcDQ1NzhZb25LKzNiVGhScmVvQ0pIWmw2S3dmQ1Ivbkp1NGlWWTNnZ2M3aks1NUI1bHVPUG16NTQ2ejZTZ2cKNDlXQWorWU5pMllOTDRpSHcrTC9FUHNCN2gwL1lvVjVSZitvcE9CYWZMbUpHQ2trRHBubjNaMWtjQ290RDNXZQpOTEhkQWdNQkFBR2pRakJBTUE0R0ExVWREd0VCL3dRRUF3SUJCakFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHCkExVWREZ1FXQkJUQXR6WGI3NWN1LzA2eWg5aTZMa0JOOGtFVklEQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUEKS3JHSE84b2lwREkrTzZORlorTWozcUlKcm1OYU9CcWFDZTVkcElXYTlNczN6NkJxcnlYa0Z6SXVVN0RERmtUOQplaktJaHRDM2o5cXZOL1JFcnl6d092MXE3MFJiV1NvUUNhUWJ4M01qcGxjYWtjRWlsSmhTVFdTQkZwRjNSM0FxCktzRkZzeEJwK1lCVVJRK2lDc1p5cGZ1ZG1XVkVyNXkvSCtPdEVKMUFucVViS3dJSUtLdi8zbEY1NFN3UWFvc2cKRXJwQ0tDcVMxS0ZGYUpzUzVxNkVxWEVkSWFhTVUvN2NsM1dRS2h1Rnk1bEZZVzlReXlIOGtoQXFNdHB5UitPYQoxb3hrK0MzNFVJTXhxUEduRzJNYW94ZDk3Z1VhTDFabVNha1JEVWVEcjdsa0I0eUlVazZmZFlyOC83Sm91MHcyCm5Xajl6RmJhb29JQlJRSUFmU25yd0E9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
+        namespace: sgc-mutating-webhook
+        name: mutating-webhook
+        path: /webhook/mutate
     rules:
-      - operations: [ "CREATE" ]
-        apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
+      - apiGroups:
+          - "*"
+        apiVersions:
+          - "*"
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+    namespaceSelector:
+      matchLabels:
+        webhook.toleration-mutate: enabled
