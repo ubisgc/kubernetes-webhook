@@ -1,14 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: example-webhook
+  name: mutating-webhook
   namespace: sgc-mutating-webhook
   labels:
     app: mutating-webhook
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: mutating-webhook
+  template:
+    metadata:
+      labels:
+        app: mutating-webhook
     spec:
       containers:
-        - name: example-webhook
-          image: sgchub/kubernetes-webhook:main-b3fe6df
+        - name: mutating-webhook
+          image: sgchub/kubernetes-webhook:main-51da49d
           imagePullPolicy: Always
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook/certs
+              readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            defaultMode: 420
+            secretName: mutating-webhook
