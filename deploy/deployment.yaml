@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mutating-webhook
-          image: sgchub/kubernetes-webhook:main-51da49d
+          image: sgchub/kubernetes-webhook:main-5fdc29e
           imagePullPolicy: Always
           volumeMounts:
             - name: webhook-certs
