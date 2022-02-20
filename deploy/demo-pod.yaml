@@ -5,15 +5,27 @@ metadata:
     openshift.io/description: "Mutating webhook demo pod"
     openshift.io/display-name: ""
   name: sgc-mutating-demo-app
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: demo-pod
-  namespace: sgc-mutating-demo-app
   labels:
     webhook.toleration-mutate: enabled
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+  namespace: sgc-mutating-demo-app
+  labels:
+    app: nginx
 spec:
-  containers:
-  - name: nginx
-    image: nginx
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          imagePullPolicy: Always

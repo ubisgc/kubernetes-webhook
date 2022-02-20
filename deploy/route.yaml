@@ -4,7 +4,10 @@ metadata:
   name: mutating-webhook
 spec:
   port:
-    targetPort: http
+    targetPort: https
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: None
   to:
     kind: Service
     name: mutating-webhook
